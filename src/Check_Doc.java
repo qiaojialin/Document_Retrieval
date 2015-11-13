@@ -1,7 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.text.DecimalFormat;
 import javax.xml.namespace.QName;
 import org.apache.poi.POIXMLDocument;
 import org.apache.poi.POIXMLTextExtractor;
@@ -17,42 +16,60 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.CTP;
 public class Check_Doc implements Runnable {
 
 	private File file;
-	
 	private int type;
+	
 	private String text;
 	
+//	private boolean exception2003;
+//	private boolean exception2007;
 	public Check_Doc(File f, int t)
 	{
 		file = f;
 		type = t;
 		text = "";
+//		exception2003 = false;
+//		exception2007 = false;
 	}
 	
 	public void run() 
 	{
-
+		//软件升级文件不处理
+		if(file.getName().charAt(0) == '$')
+			return;
+		//缓存文件不处理
+		else if(file.getName().charAt(0) == '~' && file.getName().charAt(1) == '$')
+			return;
 		
 		if(type == 1)
 			read2003();
 		else 
 			read2007();
 
-		System.out.println(file.getAbsolutePath());
-		System.out.println(text);
+		//字符串在这准备好了 text
 	} 
 
 	//2003 正文+文本框+表格
     public void read2003()
     {
-	    try {
+	    try 
+	    {
 	    	InputStream is = new FileInputStream(file);
-		   	 WordExtractor ex;
-		   	 ex = new WordExtractor(is);
-		   	 text = ex.getText().trim();
-	   		 } catch (Exception e) {
-	   			// TODO Auto-generated catch block
-	   			 e.printStackTrace();
-	   		 }
+		   	WordExtractor ex;
+		   	ex = new WordExtractor(is);
+		   	text = ex.getText().trim();
+		   	is.close();
+	   	} 
+	    catch (Exception e) 
+	   	{
+//	    	exception2003 = true;
+	   		read2007();
+	   		return;
+//	   		if(exception2007)
+//	   		{
+//	   			e.printStackTrace();
+//	   			System.out.println(file.getAbsolutePath());
+//	   		}
+	   	}
     } 
    
     //2007 正文+文本框+表格
@@ -87,53 +104,20 @@ public class Check_Doc implements Runnable {
 					}
 				}
 			}
-		}catch (Exception e){
-			e.printStackTrace();
+			inputStream.close();
+		}
+		catch (Exception e)
+		{
+			return;
+//			exception2007 = true;
+//			if(!exception2003)
+//			{
+//				//e.printStackTrace();
+//				//System.out.println(file.getAbsolutePath());
+//			}
 		}           
     }
     
-
-	
-	//获得文件大小
-	public static double getSize(File f)
-	{
-		//得到指定目录下 文件的大小
-		long s=0;
-		if(f.exists())
-		{
-			try
-			{
-				FileInputStream fis=null;
-				fis=new FileInputStream(f);
-				s=fis.available();
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-		}
-		 
-		DecimalFormat df=new DecimalFormat("#.00");
-		String fileSizeString="";
-		if(s<1024)
-		{
-			fileSizeString=df.format((double)s)+"B";
-		}
-		else if(s<1048576)
-		{
-			fileSizeString=df.format((double)s/1024)+"K";
-		}
-		else if(s<1073741824)
-		{
-			fileSizeString=df.format((double)s/1048576)+"M";
-		}
-		else 
-		{
-			fileSizeString=df.format((double)s/1073741824)+"G";
-		}
-	//	return fileSizeString;
-		return s;
-	}
-	 
 }
 
 

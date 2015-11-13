@@ -11,8 +11,7 @@ public class Document_Retrieval
 	      
          for(File a : disks)
         	 searchAllFile(a); 
-         //File a = new File("e:\\test");   
-         //searchAllFile(a);
+		 
 	 }
 
 	 
