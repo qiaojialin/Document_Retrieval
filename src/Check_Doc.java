@@ -20,15 +20,11 @@ public class Check_Doc implements Runnable {
 	
 	private String text;
 	
-//	private boolean exception2003;
-//	private boolean exception2007;
 	public Check_Doc(File f, int t)
 	{
 		file = f;
 		type = t;
 		text = "";
-//		exception2003 = false;
-//		exception2007 = false;
 	}
 	
 	public void run() 
@@ -56,19 +52,12 @@ public class Check_Doc implements Runnable {
 	    	InputStream is = new FileInputStream(file);
 		   	WordExtractor ex;
 		   	ex = new WordExtractor(is);
-		   	text = ex.getText().trim();
-		   	is.close();
+		   	text += ex.getTextFromPieces().trim();
 	   	} 
 	    catch (Exception e) 
 	   	{
-//	    	exception2003 = true;
 	   		read2007();
 	   		return;
-//	   		if(exception2007)
-//	   		{
-//	   			e.printStackTrace();
-//	   			System.out.println(file.getAbsolutePath());
-//	   		}
 	   	}
     } 
    
@@ -109,12 +98,6 @@ public class Check_Doc implements Runnable {
 		catch (Exception e)
 		{
 			return;
-//			exception2007 = true;
-//			if(!exception2003)
-//			{
-//				//e.printStackTrace();
-//				//System.out.println(file.getAbsolutePath());
-//			}
 		}           
     }
     
